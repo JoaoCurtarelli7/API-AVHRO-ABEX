@@ -8,10 +8,9 @@ export async function doacaoEntreguesRoutes(app: FastifyInstance) {
   });
 
   const bodySchema = z.object({
-    item: z.coerce.string(),
+    item: z.string(),
     date: z.coerce.date(),
-    donatario: z.coerce.string(),
-    donatarioId: z.coerce.number(),
+    donatarioId: z.number(),
   });
 
   app.get("/doacoes-entregues", async () => {
@@ -46,23 +45,19 @@ export async function doacaoEntreguesRoutes(app: FastifyInstance) {
   });
 
   app.post("/doacoes-entregues", async (req, rep) => {
-    const { date, donatario, donatarioId, item } = bodySchema.parse(req.body);
+    const { date, donatarioId, item } = bodySchema.parse(req.body);
 
     const doacaoEntregue = await prisma.doacaoEntregue.create({
       data: {
         date,
-        donatario: {
-          connect: {
-            id: donatarioId,
-            name: donatario,
-          },
-        },
         item,
+        donatarioId,
       },
     });
 
     return rep.code(201).send(doacaoEntregue);
   });
+
   app.delete("/doacoes-entregues/:id", async (req, rep) => {
     const { id } = paramsSchema.parse(req.params);
 

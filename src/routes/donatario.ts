@@ -8,9 +8,9 @@ export async function donatarioRoutes(app: FastifyInstance) {
   });
 
   const bodySchema = z.object({
-    name: z.coerce.string(),
+    name: z.string(),
     dataCadastro: z.coerce.date(),
-    cpf: z.coerce.string(),
+    cpf: z.string(),
   });
 
   app.get("/donatarios", async () => {
