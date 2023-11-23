@@ -18,7 +18,7 @@ CREATE TABLE "Donatario" (
 CREATE TABLE "Familia" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT,
-    "NumeroIntegrantes" INTEGER,
+    "numeroIntegrantes" INTEGER,
     "dataCadastro" DATETIME,
     "bairro" TEXT
 );

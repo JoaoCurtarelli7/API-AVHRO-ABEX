@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { prisma } from "../lib/prisma";
 
 export async function familiaRoutes(app: FastifyInstance) {
   const paramsSchema = z.object({
@@ -8,10 +8,10 @@ export async function familiaRoutes(app: FastifyInstance) {
   });
 
   const bodySchema = z.object({
-    name: z.coerce.string(),
+    name: z.string(),
     dataCadastro: z.coerce.date(),
-    bairro: z.coerce.string(),
-    NumeroIntegrantes: z.coerce.number(),
+    bairro: z.string(),
+    numeroIntegrantes: z.number(),
   });
 
   app.get("/familias", async () => {
@@ -33,21 +33,15 @@ export async function familiaRoutes(app: FastifyInstance) {
   });
 
   app.post("/familias", async (req, rep) => {
-    const { name, dataCadastro, bairro, NumeroIntegrantes } = bodySchema.parse(
-      req.body
-    );
+    const dataBody = bodySchema.parse(req.body);
 
     const familia = await prisma.familia.create({
-      data: {
-        name,
-        dataCadastro,
-        bairro,
-        NumeroIntegrantes,
-      },
+      data: dataBody,
     });
 
     return rep.code(201).send(familia);
   });
+  
   app.delete("/familias/:id", async (req, rep) => {
     const { id } = paramsSchema.parse(req.params);
 

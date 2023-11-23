@@ -62,4 +62,35 @@ export async function donatarioRoutes(app: FastifyInstance) {
 
     return donatario;
   });
+
+  app.put("/donatarios/:id", async (req, rep) => {
+    const { id } = paramsSchema.parse(req.params);
+    const { name, dataCadastro, cpf } = bodySchema.parse(req.body);
+  
+    try {
+      await prisma.donatario.findUnique({
+        where: {
+          id,
+        },
+      });
+  
+      const updatedDonatario = await prisma.donatario.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          dataCadastro,
+          cpf,
+        },
+      });
+  
+      return rep.send(updatedDonatario);
+    } catch (error) {
+     
+  
+      console.error(error);
+      return rep.code(500).send({ message: 'Erro interno do servidor' });
+    }
+  });
 }

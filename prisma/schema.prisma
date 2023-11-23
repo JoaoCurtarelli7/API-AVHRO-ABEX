@@ -29,7 +29,7 @@ model Donatario {
 model Familia {
   id                Int       @id @default(autoincrement())
   name              String?
-  NumeroIntegrantes Int?
+  numeroIntegrantes Int?
   dataCadastro      DateTime?
   bairro            String?
 }

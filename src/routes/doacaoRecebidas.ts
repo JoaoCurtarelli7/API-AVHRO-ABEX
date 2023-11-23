@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { prisma } from "../lib/prisma";
 
 export async function doacaoRecebidasRoutes(app: FastifyInstance) {
   const paramsSchema = z.object({
@@ -8,14 +8,27 @@ export async function doacaoRecebidasRoutes(app: FastifyInstance) {
   });
 
   const bodySchema = z.object({
-    item: z.coerce.string(),
+    item: z.string(),
     date: z.coerce.date(),
-    doador: z.coerce.string(),
-    doadorId: z.coerce.number(),
+    doadorId: z.number(),
   });
 
+ 
   app.get("/doacoes-recebidas", async () => {
-    const doacaoRecebida = await prisma.doacaoRecebida.findMany();
+    const doacaoRecebida = await prisma.doacaoRecebida.findMany({
+      select: {
+        id: true,
+        item: true,
+        date: true,
+        doador: {
+          select: {
+            name: true,
+            id: true,         
+            cpf: true,
+          },
+        },
+      },
+    });
 
     return doacaoRecebida;
   });
@@ -33,23 +46,51 @@ export async function doacaoRecebidasRoutes(app: FastifyInstance) {
   });
 
   app.post("/doacoes-recebidas", async (req, rep) => {
-    const { date, doador, doadorId, item } = bodySchema.parse(req.body);
+    const { date, doadorId, item } = bodySchema.parse(req.body);
 
     const doacaoRecebida = await prisma.doacaoRecebida.create({
-      data: { 
-        date, 
-        doador: { 
-          connect: { 
-            id: doadorId, 
-            name: doador
-          } 
-        }, 
-        item 
+      data: {
+        date,
+        doadorId,
+        item,
       },
     });
 
     return rep.code(201).send(doacaoRecebida);
   });
+
+
+  app.put("/doacoes-recebidas/:id", async (req, rep) => {
+    const { id } = paramsSchema.parse(req.params);
+    const { date, doadorId, item  } = bodySchema.parse(req.body);
+  
+    try {
+      await prisma.doacaoRecebida.findUnique({
+        where: {
+          id,
+        },
+      });
+  
+      const updatedDonatario = await prisma.doacaoRecebida.update({
+        where: {
+          id,
+        },
+        data: {
+          date,
+          doadorId,
+          item,
+        },
+      });
+  
+      return rep.send(updatedDonatario);
+    } catch (error) {
+     
+  
+      console.error(error);
+      return rep.code(500).send({ message: 'Erro interno do servidor' });
+    }
+  });
+
   app.delete("/doacoes-recebidas/:id", async (req, rep) => {
     const { id } = paramsSchema.parse(req.params);
 

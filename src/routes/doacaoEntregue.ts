@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { prisma } from "../lib/prisma";
 
 export async function doacaoEntreguesRoutes(app: FastifyInstance) {
   const paramsSchema = z.object({
@@ -68,5 +68,34 @@ export async function doacaoEntreguesRoutes(app: FastifyInstance) {
     });
 
     return doacaoEntregue;
+  });
+
+  app.put("/doacoes-entregues/:id", async (req, rep) => {
+    const { id } = paramsSchema.parse(req.params);
+    const { date, donatarioId, item } = bodySchema.parse(req.body);
+
+    try {
+      await prisma.doacaoEntregue.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      const updatedDoacaoEntregue = await prisma.doacaoEntregue.update({
+        where: {
+          id,
+        },
+        data: {
+          date,
+          item,
+          donatarioId,
+        },
+      });
+
+      return rep.send(updatedDoacaoEntregue);
+    } catch (error) {
+      console.error(error);
+      return rep.code(500).send({ message: "Erro interno do servidor" });
+    }
   });
 }

@@ -52,4 +52,24 @@ export async function doadorRoutes(app: FastifyInstance) {
 
     return doador;
   });
+
+  app.put("/doador/:id", async (req, rep) => {
+    const { id } = paramsSchema.parse(req.params);
+    const { cpf, dataCadastro, name } = bodySchema.parse(req.body);
+
+    const existingDoador = await prisma.doador.findUnique({
+      where: { id },
+    });
+
+    if (!existingDoador) {
+      return rep.code(404).send({ error: "Doador not found" });
+    }
+
+      const updatedDoador = await prisma.doador.update({
+      where: { id },
+      data: { cpf, dataCadastro, name },
+    });
+
+    return updatedDoador;
+  });
 }
