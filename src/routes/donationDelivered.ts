@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
-export async function doacaoEntreguesRoutes(app: FastifyInstance) {
+export async function donationDeliveredRoutes(app: FastifyInstance) {
   const paramsSchema = z.object({
     id: z.coerce.number(),
   });
@@ -10,16 +10,16 @@ export async function doacaoEntreguesRoutes(app: FastifyInstance) {
   const bodySchema = z.object({
     item: z.string(),
     date: z.coerce.date(),
-    donatarioId: z.number(),
+    donataryId: z.number(),
   });
 
-  app.get("/doacoes-entregues", async () => {
-    const doacaoEntregue = await prisma.doacaoEntregue.findMany({
+  app.get("/donation-delivered", async () => {
+    const donationDelivered = await prisma.donationDelivered.findMany({
       select: {
         id: true,
         item: true,
         date: true,
-        donatario: {
+        donatary: {
           select: {
             cpf: true,
             name: true,
@@ -29,66 +29,66 @@ export async function doacaoEntreguesRoutes(app: FastifyInstance) {
       },
     });
 
-    return doacaoEntregue;
+    return donationDelivered;
   });
 
-  app.get("/doacoes-entregues/:id", async (req, rep) => {
+  app.get("/donation-delivered/:id", async (req, rep) => {
     const { id } = paramsSchema.parse(req.params);
 
-    const doacaoEntregue = await prisma.doacaoEntregue.findUniqueOrThrow({
+    const donationDelivered = await prisma.donationDelivered.findUniqueOrThrow({
       where: {
         id,
       },
     });
 
-    return doacaoEntregue;
+    return donationDelivered;
   });
 
-  app.post("/doacoes-entregues", async (req, rep) => {
-    const { date, donatarioId, item } = bodySchema.parse(req.body);
+  app.post("/donation-delivered", async (req, rep) => {
+    const { date, donataryId, item } = bodySchema.parse(req.body);
 
-    const doacaoEntregue = await prisma.doacaoEntregue.create({
+    const donationDelivered = await prisma.donationDelivered.create({
       data: {
         date,
         item,
-        donatarioId,
+        donataryId,
       },
     });
 
-    return rep.code(201).send(doacaoEntregue);
+    return rep.code(201).send(donationDelivered);
   });
 
-  app.delete("/doacoes-entregues/:id", async (req, rep) => {
+  app.delete("/donation-delivered/:id", async (req, rep) => {
     const { id } = paramsSchema.parse(req.params);
 
-    const doacaoEntregue = await prisma.doacaoEntregue.delete({
+    const donationDelivered = await prisma.donationDelivered.delete({
       where: {
         id,
       },
     });
 
-    return doacaoEntregue;
+    return donationDelivered;
   });
 
-  app.put("/doacoes-entregues/:id", async (req, rep) => {
+  app.put("/donation-delivered/:id", async (req, rep) => {
     const { id } = paramsSchema.parse(req.params);
-    const { date, donatarioId, item } = bodySchema.parse(req.body);
+    const { date, donataryId, item } = bodySchema.parse(req.body);
 
     try {
-      await prisma.doacaoEntregue.findUnique({
+      await prisma.donationDelivered.findUnique({
         where: {
           id,
         },
       });
 
-      const updatedDoacaoEntregue = await prisma.doacaoEntregue.update({
+      const updatedDoacaoEntregue = await prisma.donationDelivered.update({
         where: {
           id,
         },
         data: {
           date,
           item,
-          donatarioId,
+          donataryId,
         },
       });
 

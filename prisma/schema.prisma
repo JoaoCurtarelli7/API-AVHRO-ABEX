@@ -10,42 +10,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Doador {
-  id             Int              @id @default(autoincrement())
-  name           String?
-  cpf            String?
-  dataCadastro   DateTime?
-  DoacaoRecebida DoacaoRecebida[]
+model Donor {
+  id               Int                @id @default(autoincrement())
+  name             String?
+  cpf              String?
+  dateRegistration DateTime?
+  DonationReceived DonationReceived[]
 }
 
-model Donatario {
-  id             Int              @id @default(autoincrement())
-  name           String?
-  cpf            String?
-  dataCadastro   DateTime?
-  DoacaoEntregue DoacaoEntregue[]
-}
-
-model Familia {
-  id                Int       @id @default(autoincrement())
+model Donatary {
+  id                Int                 @id @default(autoincrement())
   name              String?
-  numeroIntegrantes Int?
-  dataCadastro      DateTime?
-  bairro            String?
+  cpf               String?
+  dateRegistration  DateTime?
+  DonationDelivered DonationDelivered[]
 }
 
-model DoacaoEntregue {
-  id          Int       @id @default(autoincrement())
-  item        String
-  date        DateTime
-  donatario   Donatario @relation(fields: [donatarioId], references: [id])
-  donatarioId Int
+model Family {
+  id               Int       @id @default(autoincrement())
+  name             String?
+  numberMembers    Int?
+  dateRegistration DateTime?
+  bairro           String?
 }
 
-model DoacaoRecebida {
-  id       Int      @id @default(autoincrement())
-  item     String
-  date     DateTime
-  doador   Doador   @relation(fields: [doadorId], references: [id])
-  doadorId Int
+model DonationDelivered {
+  id         Int      @id @default(autoincrement())
+  item       String
+  date       DateTime
+  donatary   Donatary @relation(fields: [donataryId], references: [id])
+  donataryId Int
+}
+
+model DonationReceived {
+  id      Int      @id @default(autoincrement())
+  item    String
+  date    DateTime
+  donor   Donor    @relation(fields: [donorId], references: [id])
+  donorId Int
 }
